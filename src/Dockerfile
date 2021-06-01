@@ -44,10 +44,10 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
-    pecl install imagick memcached redis swoole && \
-    docker-php-ext-install \
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu \
+    && pecl install imagick memcached redis swoole \
+    && docker-php-ext-install \
         calendar \
         ctype \
         curl \
