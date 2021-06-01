@@ -1,0 +1,79 @@
+image: sindriainc/image-builder:latest
+
+pipelines:
+  tags:
+    '*':
+      - step:
+          name: Build Image
+          script:
+            - echo -e "${BLUE}Building image...${NC}"
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 5.6
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 7.0
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 7.1
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 7.2
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 7.3
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 7.4
+            - bash build.sh ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG} ${BITBUCKET_TAG} 8
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-5.6 --output "${BITBUCKET_REPO_SLUG}-5.6.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.0 --output "${BITBUCKET_REPO_SLUG}-7.0.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.1 --output "${BITBUCKET_REPO_SLUG}-7.1.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.2 --output "${BITBUCKET_REPO_SLUG}-7.2.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.3 --output "${BITBUCKET_REPO_SLUG}-7.3.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.4 --output "${BITBUCKET_REPO_SLUG}-7.4.tar"
+            - docker save ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8 --output "${BITBUCKET_REPO_SLUG}-8.tar"
+            - cowsay -f tux "Build Success"
+          services:
+            - docker
+          caches:
+            - docker
+          artifacts:
+            - "*.tar"
+            - "*.tar"
+            - "*.tar"
+            - "*.tar"
+            - "*.tar"
+            - "*.tar"
+            - "*.tar"
+      - step:
+          name: Push Image
+          script:
+            - echo -e "${BLUE}Loading cached image...${NC}"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-5.6.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-7.0.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-7.1.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-7.2.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-7.3.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-7.4.tar"
+            - docker load --input "${BITBUCKET_REPO_SLUG}-8.tar"
+            - echo -e "${BLUE}Tagging cached image...${NC}"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-5.6" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-5.6"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.0" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.0"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.1" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.1"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.2" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.2"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.3" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.3"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.4" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.4"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8"
+            - docker tag "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8" "${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest"
+            - echo -e "${BLUE}Login into registry...${NC}"
+            - echo ${DOCKERHUB_PASSWORD} | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            - echo -e "${BLUE}Pushing image into registry...${NC}"
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-5.6
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.0
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.1
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.2
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.3
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.4
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8
+            - docker push ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest
+            - echo -e "${BLUE}Cleaning local registry...${NC}"
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-5.6
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.0
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.1
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.2
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.3
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-7.4
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_TAG}-8
+            - docker image rm ${DOCKERHUB_NAMESPACE}/${BITBUCKET_REPO_SLUG}:latest
+            - cowsay -f dragon "Well Done! New docker image is now on your registry."
+          services:
+            - docker
