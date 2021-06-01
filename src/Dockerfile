@@ -95,13 +95,6 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
         pdo_mysql \
         pdo_dblib \
         pcntl \
-        tidy \
-    && docker-php-ext-enable \
-        imagick \
-        redis \
-        memcached \
-        opcache \
-        swoole \
-        zip
+        tidy
 
 SHELL ["/bin/bash", "-c"]
