@@ -16,11 +16,6 @@ ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
 
-
-RUN apk update \
-    &&
-    &&
-
 # Update and install packages
 RUN apk update && \
     apk add \
