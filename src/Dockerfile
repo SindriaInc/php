@@ -16,6 +16,11 @@ ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
 
+
+RUN apk update \
+    &&
+    &&
+
 # Update and install packages
 RUN apk update && \
     apk add \
@@ -30,7 +35,17 @@ RUN apk update && \
     git \
     rsync \
     ca-certificates \
+    libzip-dev \
+    libsodium \
+    libffi-dev \
+    postgresql-dev \
+    libjpeg-turbo \
+    freetype \
+    libpng \
+    icu \
+    ssmpt \
     tzdata && \
+    apk add --no-cache --virtual build-dependencies icu-dev libxml2-dev freetype-dev libpng-dev libjpeg-turbo-dev g++ make autoconf libsodium-dev && \
     rm -rf /var/cache/apk/*
 
 # Setting app user, timezone and permissions
@@ -44,10 +59,10 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu \
-    && pecl install imagick memcached redis swoole \
-    && docker-php-ext-install \
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
+    pecl install imagick memcached redis swoole && \
+    docker-php-ext-install \
         calendar \
         ctype \
         curl \
