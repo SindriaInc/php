@@ -54,7 +54,6 @@ WORKDIR /var/www/app
 
 # Install php extensions
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && pecl install imagick memcached redis swoole \
     && docker-php-ext-install \
         calendar \
         ctype \
