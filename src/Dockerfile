@@ -44,47 +44,56 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN apk add \
-    php${PHP_VERSION} \
-    php${PHP_VERSION}-calendar \ 
-    php${PHP_VERSION}-ctype \
-    php${PHP_VERSION}-curl \
-    php${PHP_VERSION}-dom \
-    php${PHP_VERSION}-exif \
-    php${PHP_VERSION}-fileinfo \
-    php${PHP_VERSION}-ftp \
-    php${PHP_VERSION}-gd \
-    php${PHP_VERSION}-gettext \ 
-    php${PHP_VERSION}-iconv \
-    php${PHP_VERSION}-intl \
-    php${PHP_VERSION}-json \
-    php${PHP_VERSION}-mbstring \ 
-    php${PHP_VERSION}-mcrypt \
-    php${PHP_VERSION}-mysql \
-    php${PHP_VERSION}-mysqli \
-    php${PHP_VERSION}-mysqlnd \
-    php${PHP_VERSION}-PDO \
-    php${PHP_VERSION}-Phar \
-    php${PHP_VERSION}-posix \
-    php${PHP_VERSION}-readline \ 
-    php${PHP_VERSION}-shmop \
-    php${PHP_VERSION}-SimpleXML \ 
-    php${PHP_VERSION}-sockets \ 
-    php${PHP_VERSION}-sysvmsg \ 
-    php${PHP_VERSION}-sysvsem \ 
-    php${PHP_VERSION}-sysvshm \
-    php${PHP_VERSION}-tokenizer \ 
-    php${PHP_VERSION}-wddx \
-    php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-xmlreader \
-    php${PHP_VERSION}-xmlwriter \
-    php${PHP_VERSION}-xsl \
-    php${PHP_VERSION}-opcache \ 
-    php${PHP_VERSION}-zip \
-    php${PHP_VERSION}-fpm \
-    php${PHP_VERSION}-bcmath \
-    php${PHP_VERSION}-imap \
-    php${PHP_VERSION}-soap && \
-    rm -rf /var/cache/apk/*
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
+    pecl install imagick memcached redis swoole && \
+    docker-php-ext-install \
+        calendar \
+        ctype \
+        curl \
+        dom \
+        exif \
+        fileinfo \
+        ftp \
+        gd \
+        gettext \
+        iconv \
+        intl \
+        json \
+        mbstring \
+        mysql \
+        mysqli \
+        mysqlnd \
+        pdo \
+        phar \
+        posix \
+        readline \
+        shmop \
+        SimpleXML \
+        sockets \
+        sysvmsg \
+        sysvshm \
+        tokenizer \
+        xml \
+        xmlreader \
+        xmlwriter \
+        zip \
+        xsl \
+        bcmath \
+        imap \
+        soap \
+        pgsql \
+        pdo_pgsql \
+        pdo_mysql \
+        pdo_dblib \
+        pcntl \
+        tidy \
+    && docker-php-ext-enable \
+        imagick \
+        redis \
+        memcached \
+        opcache \
+        swoole \
+        zip
 
 SHELL ["/bin/bash", "-c"]
