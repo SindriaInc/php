@@ -26,7 +26,6 @@ RUN apk update && \
     libffi-dev \
     libc-dev \
     libressl-dev \
-    libbz2-dev \
     bash \
     curl \
     wget \
