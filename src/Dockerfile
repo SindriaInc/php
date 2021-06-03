@@ -51,8 +51,14 @@ RUN apk add \
     icu-dev \
     gettext-dev \
     libxml2-dev \
+    libedit-dev \
+    libxslt-dev \
+    imap-dev \
+    krb5-dev \
+    tidyhtml-dev \
     libjpeg-turbo-dev && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* && \
+    ln -s /usr/include/tidybuffio.h /usr/include/buffio.h
 
 # Setting app user, timezone and permissions
 RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
@@ -65,11 +71,13 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install \
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    #pecl install imagick memcached redis swoole && \
+    docker-php-ext-install \
         calendar \
         ctype \
-        dom \
         exif \
         fileinfo \
         ftp \
@@ -80,7 +88,6 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
         json \
         mbstring \
         mysqli \
-        mysqlnd \
         pdo \
         phar \
         posix \
@@ -91,8 +98,6 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
         sysvshm \
         tokenizer \
         xml \
-        xmlreader \
-        xmlwriter \
         zip \
         xsl \
         bcmath \
@@ -101,8 +106,16 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
         pgsql \
         pdo_pgsql \
         pdo_mysql \
-        pdo_dblib \
+        #pdo_dblib \
         pcntl \
-        tidy
+        tidy && \
+        docker-php-ext-enable \
+        #imagick \
+        #redis \
+        #memcached \
+        opcache \
+        #swoole \
+        imap \
+        zip
 
 SHELL ["/bin/bash", "-c"]
