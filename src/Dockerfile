@@ -57,7 +57,6 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
     && docker-php-ext-install \
         calendar \
         ctype \
-        curl \
         dom \
         exif \
         fileinfo \
