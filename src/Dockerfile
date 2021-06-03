@@ -26,6 +26,7 @@ RUN apk update && \
     libffi-dev \
     libc-dev \
     libressl-dev \
+    libbz2-dev \
     bash \
     curl \
     wget \
@@ -50,7 +51,6 @@ RUN apk add \
     icu \
     icu-dev \
     gettext-dev \
-    libbz2-dev \
     libxml2-dev \
     libjpeg-turbo-dev && \
     rm -rf /var/cache/apk/*
