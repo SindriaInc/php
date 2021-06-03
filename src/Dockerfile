@@ -38,6 +38,8 @@ RUN apk update && \
     freetype \
     libpng \
     icu \
+    icu-dev \
+    gettext-dev \
     tzdata && \
     apk add --no-cache --virtual build-dependencies icu-dev libxml2-dev freetype-dev libpng-dev libjpeg-turbo-dev g++ make autoconf libsodium-dev && \
     rm -rf /var/cache/apk/*
