@@ -18,7 +18,7 @@ ENV PHP_VERSION=${TAG_SUFFIX}
 
 # Update and install packages
 RUN apk update && \
-    apk add --no-cache --virtual build-dependencies \
+    apk add --no-cache \
     gcc \
     g++ \
     make \
