@@ -18,9 +18,11 @@ ENV PHP_VERSION=${TAG_SUFFIX}
 
 # Update and install packages
 RUN apk update && \
-    apk add \
+    apk add --no-cache --virtual build-dependencies \
     gcc \
     g++ \
+    make \
+    autoconf \
     libffi-dev \
     libc-dev \
     libressl-dev \
@@ -32,16 +34,20 @@ RUN apk update && \
     ca-certificates \
     libzip-dev \
     libsodium \
-    libffi-dev \
+    libsodium-dev \
     postgresql-dev \
     libjpeg-turbo \
     freetype \
+    freetype-dev \
     libpng \
+    libpng-dev \
     icu \
     icu-dev \
     gettext-dev \
+    libbz2-dev \
+    libxml2-dev \
+    libjpeg-turbo-dev \
     tzdata && \
-    apk add --no-cache --virtual build-dependencies icu-dev libxml2-dev freetype-dev libpng-dev libjpeg-turbo-dev g++ make autoconf libsodium-dev && \
     rm -rf /var/cache/apk/*
 
 # Setting app user, timezone and permissions
