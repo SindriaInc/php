@@ -32,6 +32,7 @@ RUN apk update && \
     git \
     rsync \
     ca-certificates \
+    bzip2-dev \
     libzip-dev \
     libsodium \
     libsodium-dev \
