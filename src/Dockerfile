@@ -18,7 +18,7 @@ ENV PHP_VERSION=${TAG_SUFFIX}
 
 # Update and install packages
 RUN apk update && \
-    apk add --no-cache \
+    apk add \
     gcc \
     g++ \
     make \
@@ -32,6 +32,11 @@ RUN apk update && \
     git \
     rsync \
     ca-certificates \
+    tzdata && \
+    rm -rf /var/cache/apk/*
+
+# Install dependecies
+RUN apk add \
     bzip2-dev \
     libzip-dev \
     libsodium \
@@ -47,8 +52,7 @@ RUN apk update && \
     gettext-dev \
     libbz2-dev \
     libxml2-dev \
-    libjpeg-turbo-dev \
-    tzdata && \
+    libjpeg-turbo-dev && \
     rm -rf /var/cache/apk/*
 
 # Setting app user, timezone and permissions
