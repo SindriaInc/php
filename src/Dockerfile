@@ -1,5 +1,5 @@
 ARG TAG_SUFFIX
-FROM php:${TAG_SUFFIX}-alpine
+FROM sindriainc/php:1.0.0-${TAG_SUFFIX}
 
 ARG TAG_VERSION
 ARG HOST_USER_UID
@@ -8,7 +8,7 @@ ARG TIMEZONE
 LABEL \
 	name="php" \
 	image="sindriainc/php" \
-	tag="${TAG_VERSION}-${TAG_SUFFIX}" \
+	tag="${TAG_VERSION}-${TAG_SUFFIX}-${TAG_ENV}" \
 	vendor="sindria"
 
 ENV TZ=${TIMEZONE}
@@ -24,115 +24,30 @@ ENV PHP_XDEBUG_IDE_KEY PHPSTORM
 # Update and install packages
 RUN apk update && \
     apk add \
-    bash \
-    curl \
     wget \
+    vim \
+    unzip \
     git \
-    rsync \
-    ca-certificates \
-    tzdata && \
-    apk add --no-cache --virtual build-dependencies \
-    gcc \
-    g++ \
-    make \
-    autoconf \
-    libffi-dev \
-    libc-dev \
-    libressl-dev \
-    curl-dev \
-    bzip2-dev \
-    libzip-dev \
-    libsodium \
-    libsodium-dev \
-    postgresql-dev \
-    libjpeg-turbo \
-    freetype \
-    freetype-dev \
-    libpng \
-    libpng-dev \
-    icu \
-    icu-dev \
-    oniguruma-dev \
-    gettext-dev \
-    libxml2-dev \
-    libedit-dev \
-    libxslt-dev \
-    imap-dev \
-    krb5-dev \
-    tidyhtml-dev \
-    libmemcached-libs \
-    imagemagick \
-    imagemagick-libs \
-    imagemagick-dev \
-    libjpeg-turbo-dev && \
-    rm -rf /var/cache/apk/* && \
-    ln -s /usr/include/tidybuffio.h /usr/include/buffio.h
+    rsync && \
+    rm -rf /var/cache/apk/*
 
-# Setting app user, timezone and permissions
-RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
-    mkdir -p /var/www && \
-    mkdir -p /var/www/app && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    chmod -R 770 /var/www/app && \
-    chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
-
-WORKDIR /var/www/app
-
-# Install php extensions
-RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
-    #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    pecl install imagick redis && \
-    docker-php-ext-install \
-        calendar \
-        ctype \
-        curl \
-        exif \
-        fileinfo \
-        ftp \
-        gd \
-        gettext \
-        iconv \
-        intl \
-        json \
-        mbstring \
-        mysqli \
-        pdo \
-        phar \
-        posix \
-        readline \
-        shmop \
-        sockets \
-        sysvmsg \
-        sysvshm \
-        tokenizer \
-        xml \
-        zip \
-        xsl \
-        bcmath \
-        imap \
-        soap \
-        pgsql \
-        pdo_pgsql \
-        pdo_mysql \
-        #pdo_dblib \
-        pcntl \
-        tidy && \
-        docker-php-ext-enable \
-        imagick \
-        redis \
-        #memcached \
-        opcache \
-        imap \
-        zip && \
-        pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
-        pecl install swoole || echo "Swoole not supported" && \
-        docker-php-ext-enable swoole || echo "Swoole missing" && \
-        apk del build-dependencies && \
-        rm -rf /var/cache/apk/*
-
-SHELL ["/bin/bash", "-c"]
-
-# Add and setup entrypoint
-COPY resources/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
+# Install dev tools
+RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
+    php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS && \
+    pecl install xdebug-3.0.0 && \
+    docker-php-ext-enable xdebug && \
+    apk del -f .build-deps && \
+    echo "xdebug.mode=${PHP_XDEBUG_MODE}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.start_with_request=${PHP_XDEBUG_START_WITH_REQUEST}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.client_host=${PHP_XDEBUG_HOST}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.client_port=${PHP_XDEBUG_PORT}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.idekey=${PHP_XDEBUG_IDE_KEY}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.log=/var/log/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    touch /var/log/xdebug.log && \
+    curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o /usr/local/bin/php-cs-fixer && \
+    chmod +x /usr/local/bin/php-cs-fixer && \
+    curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o /usr/local/bin/phpcs && \
+    curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o /usr/local/bin/phpcbf && \
+    chmod +x /usr/local/bin/phpcs && \
+    chmod +x /usr/local/bin/phpcbf
