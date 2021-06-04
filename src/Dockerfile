@@ -24,13 +24,6 @@ ENV PHP_XDEBUG_IDE_KEY PHPSTORM
 # Update and install packages
 RUN apk update && \
     apk add \
-    gcc \
-    g++ \
-    make \
-    autoconf \
-    libffi-dev \
-    libc-dev \
-    libressl-dev \
     bash \
     curl \
     wget \
@@ -38,10 +31,14 @@ RUN apk update && \
     rsync \
     ca-certificates \
     tzdata && \
-    rm -rf /var/cache/apk/*
-
-# Install dependecies
-RUN apk add \
+    apk add --no-cache --virtual build-dependencies \
+    gcc \
+    g++ \
+    make \
+    autoconf \
+    libffi-dev \
+    libc-dev \
+    libressl-dev \
     curl-dev \
     bzip2-dev \
     libzip-dev \
@@ -120,19 +117,19 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         pdo_mysql \
         #pdo_dblib \
         pcntl \
-        tidy
-
-RUN docker-php-ext-enable \
+        tidy && \
+        docker-php-ext-enable \
         imagick \
         redis \
         #memcached \
         opcache \
         imap \
-        zip
-
-RUN pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
-    pecl install swoole || echo "Swoole not supported" && \
-    docker-php-ext-enable swoole || echo "Swoole missing"
+        zip && \
+        pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
+        pecl install swoole || echo "Swoole not supported" && \
+        docker-php-ext-enable swoole || echo "Swoole missing" && \
+        apk del build-dependencies && \
+        rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
 
