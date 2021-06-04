@@ -35,7 +35,7 @@ RUN apk update && \
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
     php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS && \
-    pecl install xdebug-3.0.0 && \
+    pecl install xdebug-3.0.0 || pecl install xdebug-2.6.0 && \
     docker-php-ext-enable xdebug && \
     apk del -f .build-deps && \
     echo "xdebug.mode=${PHP_XDEBUG_MODE}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
