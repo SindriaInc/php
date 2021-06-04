@@ -37,6 +37,7 @@ RUN apk update && \
 
 # Install dependecies
 RUN apk add \
+    curl-dev \
     bzip2-dev \
     libzip-dev \
     libsodium \
@@ -56,6 +57,10 @@ RUN apk add \
     imap-dev \
     krb5-dev \
     tidyhtml-dev \
+    libmemcached-libs \
+    imagemagick \
+    imagemagick-libs \
+    imagemagick-dev \
     libjpeg-turbo-dev && \
     rm -rf /var/cache/apk/* && \
     ln -s /usr/include/tidybuffio.h /usr/include/buffio.h
@@ -74,10 +79,11 @@ WORKDIR /var/www/app
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    #pecl install imagick memcached redis swoole && \
+    pecl install imagick redis && \
     docker-php-ext-install \
         calendar \
         ctype \
+        curl \
         exif \
         fileinfo \
         ftp \
@@ -108,14 +114,18 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
         pdo_mysql \
         #pdo_dblib \
         pcntl \
-        tidy && \
-        docker-php-ext-enable \
-        #imagick \
-        #redis \
+        tidy
+
+RUN docker-php-ext-enable \
+        imagick \
+        redis \
         #memcached \
         opcache \
-        #swoole \
         imap \
         zip
+
+RUN pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
+    pecl install swoole || echo "Swoole not supported" && \
+    docker-php-ext-enable swoole || echo "Swoole missing"
 
 SHELL ["/bin/bash", "-c"]
