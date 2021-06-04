@@ -8,7 +8,7 @@ echo -e "${CONTAINER_GATEWAY}\tdocker.host.internal\n" >> /etc/hosts
 
 # Override xdebug ide key
 if [ "${PHP_XDEBUG_IDE_KEY}" != "PHPSTORM" ]; then
-    sed -i -E "s|PHPSTORM|${PHP_XDEBUG_IDE_KEY}|g" /etc/php/${PHP_VERSION}/cli/conf.d/20-xdebug.ini
+    sed -i -E "s|PHPSTORM|${PHP_XDEBUG_IDE_KEY}|g" /usr/local/etc/php/conf.d/xdebug.ini
 fi
 
 # Override timezone by env
