@@ -15,6 +15,11 @@ ENV TZ=${TIMEZONE}
 ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
+ENV PHP_XDEBUG_MODE debug
+ENV PHP_XDEBUG_START_WITH_REQUEST yes
+ENV PHP_XDEBUG_HOST docker.host.internal
+ENV PHP_XDEBUG_PORT 9000
+ENV PHP_XDEBUG_IDE_KEY PHPSTORM
 
 # Update and install packages
 RUN apk update && \
@@ -76,7 +81,7 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ && \
     #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
     pecl install imagick redis && \
@@ -129,3 +134,7 @@ RUN pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
     docker-php-ext-enable swoole || echo "Swoole missing"
 
 SHELL ["/bin/bash", "-c"]
+
+# Add and setup entrypoint
+COPY resources/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
