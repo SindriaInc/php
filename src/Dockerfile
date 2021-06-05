@@ -132,3 +132,5 @@ SHELL ["/bin/bash", "-c"]
 # Add and setup entrypoint
 COPY resources/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
+
+USER ${SINDRIA_USER}
