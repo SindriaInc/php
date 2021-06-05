@@ -19,6 +19,7 @@ ENV PHP_VERSION=${TAG_SUFFIX}
 # Update and install packages
 RUN apk update && \
     apk add \
+    shadow \
     bash \
     curl \
     wget \
