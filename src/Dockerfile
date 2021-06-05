@@ -21,7 +21,7 @@ ENV PHP_XDEBUG_HOST docker.host.internal
 ENV PHP_XDEBUG_PORT 9000
 ENV PHP_XDEBUG_IDE_KEY PHPSTORM
 
-#USER root
+USER root
 
 # Update and install packages
 RUN apk update && \
@@ -54,4 +54,4 @@ RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
     chmod +x /usr/local/bin/phpcs && \
     chmod +x /usr/local/bin/phpcbf
 
-#USER ${SINDRIA_USER}
+USER ${SINDRIA_USER}
