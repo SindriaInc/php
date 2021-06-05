@@ -133,4 +133,4 @@ SHELL ["/bin/bash", "-c"]
 COPY resources/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
 
-USER ${SINDRIA_USER}
+#USER ${SINDRIA_USER}
