@@ -8,7 +8,7 @@ ARG TIMEZONE
 LABEL \
 	name="php" \
 	image="sindriainc/php" \
-	tag="${TAG_VERSION}-${TAG_SUFFIX}-${TAG_ENV}" \
+	tag="${TAG_VERSION}-${TAG_SUFFIX}" \
 	vendor="sindria"
 
 ENV TZ=${TIMEZONE}
