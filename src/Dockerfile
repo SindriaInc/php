@@ -11,6 +11,7 @@ LABEL \
 	tag="${TAG_VERSION}-${TAG_SUFFIX}" \
 	vendor="sindria"
 
+ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/sindria/.local/bin"
 ENV TZ=${TIMEZONE}
 ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
@@ -71,6 +72,7 @@ RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S $
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     chmod -R 770 /var/www/app && \
     chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
+COPY resources/.bashrc ${SINDRIA_USER_HOME}
 
 WORKDIR /var/www/app
 
