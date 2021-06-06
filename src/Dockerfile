@@ -126,7 +126,7 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
         pecl install swoole || echo "Swoole not supported" && \
         docker-php-ext-enable swoole || echo "Swoole missing" && \
-        apk del build-dependencies && \
+        #apk del build-dependencies && \
         rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
