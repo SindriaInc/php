@@ -1,8 +1,8 @@
 image: sindriainc/pipeline:latest
 
 pipelines:
-  tags:
-    '*':
+  branches:
+    zts:
       - step:
           name: Build and Publish Image
           script:
