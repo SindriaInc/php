@@ -1,5 +1,5 @@
 ARG TAG_SUFFIX
-FROM sindriainc/php:zts-${TAG_SUFFIX}
+FROM sindriainc/php:parallel-${TAG_SUFFIX}
 
 ARG TAG_VERSION
 ARG HOST_USER_UID

@@ -2,7 +2,7 @@ image: sindriainc/pipeline:latest
 
 pipelines:
   branches:
-    local-zts:
+    local-parallel:
       - step:
           name: Build and Publish Image
           script:
