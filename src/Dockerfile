@@ -1,6 +1,7 @@
 ARG TAG_SUFFIX
 FROM sindriainc/php:zts-${TAG_SUFFIX}
 
+ARG TAG_SUFFIX
 ARG TAG_VERSION
 ARG HOST_USER_UID
 ARG TIMEZONE
@@ -15,43 +16,17 @@ ENV TZ=${TIMEZONE}
 ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
-ENV PHP_XDEBUG_MODE debug
-ENV PHP_XDEBUG_START_WITH_REQUEST yes
-ENV PHP_XDEBUG_HOST docker.host.internal
-ENV PHP_XDEBUG_PORT 9000
-ENV PHP_XDEBUG_IDE_KEY PHPSTORM
 
 #USER root
 
-# Update and install packages
-RUN apk update && \
-    apk add \
-    wget \
-    vim \
-    unzip \
-    git \
-    rsync && \
-    rm -rf /var/cache/apk/*
-
-# Install dev tools
-RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php && \
-    php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS && \
-    pecl install xdebug-3.0.0 || pecl install xdebug-2.6.0 && \
-    docker-php-ext-enable xdebug && \
-    apk del -f .build-deps && \
-    echo "xdebug.mode=${PHP_XDEBUG_MODE}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    echo "xdebug.start_with_request=${PHP_XDEBUG_START_WITH_REQUEST}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    echo "xdebug.client_host=${PHP_XDEBUG_HOST}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    echo "xdebug.client_port=${PHP_XDEBUG_PORT}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    echo "xdebug.idekey=${PHP_XDEBUG_IDE_KEY}" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    echo "xdebug.log=/var/log/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini && \
-    touch /var/log/xdebug.log && \
-    curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o /usr/local/bin/php-cs-fixer && \
-    chmod +x /usr/local/bin/php-cs-fixer && \
-    curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o /usr/local/bin/phpcs && \
-    curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o /usr/local/bin/phpcbf && \
-    chmod +x /usr/local/bin/phpcs && \
-    chmod +x /usr/local/bin/phpcbf
+# Install pthreads
+RUN cd /tmp && \
+    git clone https://github.com/krakjoe/pthreads.git && \
+    cd pthreads && \
+    phpize && \
+    ./configure --with-php-config=/usr/local/bin/php-config && \
+    make && \
+    cp modules/pthreads.so /usr/lib64/php-zts/modules/ && \
+    echo "extension=pthreads.so" >> /etc/php-zts.d/pthreads.ini
 
 #USER ${SINDRIA_USER}
