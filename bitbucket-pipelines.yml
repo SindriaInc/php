@@ -2,7 +2,7 @@ image: sindriainc/pipeline:latest
 
 pipelines:
   branches:
-    pthreads:
+    parallel:
       - step:
           name: Build and Publish Image
           script:

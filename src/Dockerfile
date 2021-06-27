@@ -19,14 +19,8 @@ ENV PHP_VERSION=${TAG_SUFFIX}
 
 #USER root
 
-# Install pthreads
-RUN cd /tmp && \
-    git clone https://github.com/krakjoe/pthreads.git && \
-    cd pthreads && \
-    phpize && \
-    ./configure --with-php-config=/usr/local/bin/php-config && \
-    make && \
-    cp modules/pthreads.so /usr/lib64/php-zts/modules/ && \
-    echo "extension=pthreads.so" >> /etc/php-zts.d/pthreads.ini
+# Install parallel
+RUN pecl install parallel && \
+    echo "extension=parallel.so" > /usr/local/etc/php/conf.d/parallel.ini
 
 #USER ${SINDRIA_USER}
