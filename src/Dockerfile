@@ -81,6 +81,9 @@ WORKDIR /var/www/app
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-configure tokenizer && \
+    docker-php-ext-configure session && \
+    docker-php-ext-configure openssl && \
     pecl install imagick redis && \
     docker-php-ext-install \
         calendar \
@@ -125,6 +128,9 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         #memcached \
         opcache \
         imap \
+        tokenizer \
+        session \
+        openssl \
         zip && \
         pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
         pecl install swoole || echo "Swoole not supported" && \
