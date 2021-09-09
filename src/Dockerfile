@@ -30,7 +30,10 @@ RUN apk update && \
     openssl \
     ca-certificates \
     tzdata && \
-    apk add --no-cache --virtual build-dependencies \
+    rm -rf /var/cache/apk/*
+
+# Install dependencies
+RUN apk add --no-cache --virtual build-dependencies \
     gcc \
     g++ \
     make \
@@ -82,9 +85,9 @@ WORKDIR /var/www/app
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     #docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-configure tokenizer && \
-    docker-php-ext-configure session && \
-    docker-php-ext-configure openssl && \
+    #docker-php-ext-configure tokenizer && \
+    #docker-php-ext-configure session && \
+    #docker-php-ext-configure openssl && \
     pecl install imagick redis && \
     docker-php-ext-install \
         calendar \
@@ -129,17 +132,23 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         #memcached \
         opcache \
         imap \
-        tokenizer \
-        session \
-        openssl \
+        #tokenizer \
+        #session \
+        #openssl \
         zip && \
         pecl install pdo_dblib || echo "Unsupported php version for pdo_dblib" && \
         pecl install swoole || echo "Swoole not supported" && \
         docker-php-ext-enable swoole || echo "Swoole missing" && \
-        #apk del build-dependencies && \
+        apk del build-dependencies && \
         rm -rf /var/cache/apk/*
 
-COPY resources/php /etc/php${PHP_VERSION}/conf.d/
+RUN apk add \
+    php${PHP_VERSION}-session \
+    php${PHP_VERSION}-openssl \
+    php${PHP_VERSION}-tokenizer && \
+    rm -rf /var/cache/apk/*
+
+#COPY resources/php /etc/php${PHP_VERSION}/conf.d/
 
 SHELL ["/bin/bash", "-c"]
 
