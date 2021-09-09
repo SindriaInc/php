@@ -26,6 +26,7 @@ RUN apk update && \
     wget \
     git \
     rsync \
+    openssl \
     ca-certificates \
     tzdata && \
     apk add --no-cache --virtual build-dependencies \
@@ -104,6 +105,8 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         sysvmsg \
         sysvshm \
         tokenizer \
+        session \
+        openssl \
         xml \
         zip \
         xsl \
