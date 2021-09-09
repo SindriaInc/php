@@ -138,6 +138,8 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
         #apk del build-dependencies && \
         rm -rf /var/cache/apk/*
 
+COPY resources/php /etc/php${PHP_VERSION}/conf.d/
+
 SHELL ["/bin/bash", "-c"]
 
 # Add and setup entrypoint
