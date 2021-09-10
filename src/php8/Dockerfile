@@ -32,15 +32,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 ## Install dependencies
-RUN apk add --no-cache --virtual build-dependencies \
-    gcc \
-    g++ \
-    make \
-    autoconf \
-    pkgconf \
-    imagemagick \
-    imagemagick-libs \
-    imagemagick-dev && \
+RUN apk add --no-cache --virtual build-dependencies gcc g++ make autoconf libffi-dev libc-dev libressl-dev curl-dev bzip2-dev libzip-dev libsodium libsodium-dev postgresql-dev libjpeg-turbo freetype freetype-dev libpng libpng-dev icu icu-dev oniguruma-dev gettext-dev libxml2-dev libedit-dev libxslt-dev imap-dev krb5-dev tidyhtml-dev libmemcached-libs imagemagick imagemagick-libs imagemagick-dev libjpeg-turbo-dev && \
     rm -rf /var/cache/apk/*
 
 # Setting app user, timezone and permissions
@@ -55,7 +47,11 @@ COPY resources/.bashrc ${SINDRIA_USER_HOME}
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN apk add \
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install calendar ctype curl exif fileinfo ftp gd gettext iconv intl json mbstring mysqli pdo phar posix readline shmop sockets sysvmsg sysvshm xml zip xsl bcmath imap soap pgsql pdo_pgsql pdo_mysql pcntl tidy sodium && \
+    docker-php-ext-enable imagick redis opcache imap zip && \
+    apk add \
     php${PHP_VERSION}-calendar \
     php${PHP_VERSION}-ctype \
     php${PHP_VERSION}-curl \
