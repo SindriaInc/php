@@ -1,4 +1,4 @@
-FROM php:7.3-alpine
+FROM php:7.3-alpine3.12
 
 ARG TAG_SUFFIX
 ARG TAG_VERSION
