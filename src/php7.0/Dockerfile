@@ -92,8 +92,6 @@ RUN apk add \
     php7-tidy && \
     #pecl install pdo_dblib && \
     pecl install imagick redis && \
-    pecl install swoole && \
-    docker-php-ext-enable swoole && \
     docker-php-ext-enable \
     imagick \
     redis && \
