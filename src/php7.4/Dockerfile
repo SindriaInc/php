@@ -1,4 +1,4 @@
-FROM php:8-alpine
+FROM php:7.4-alpine
 
 ARG TAG_SUFFIX
 ARG TAG_VERSION
@@ -56,40 +56,40 @@ WORKDIR /var/www/app
 
 # Install php extensions
 RUN apk add \
-    php${PHP_VERSION}-calendar \
-    php${PHP_VERSION}-ctype \
-    php${PHP_VERSION}-curl \
-    php${PHP_VERSION}-exif \
-    php${PHP_VERSION}-fileinfo \
-    php${PHP_VERSION}-ftp \
-    php${PHP_VERSION}-gd \
-    php${PHP_VERSION}-gettext \
-    php${PHP_VERSION}-iconv \
-    php${PHP_VERSION}-intl \
-    php${PHP_VERSION}-json \
-    php${PHP_VERSION}-mbstring \
-    php${PHP_VERSION}-mysqli \
-    php${PHP_VERSION}-pdo \
-    php${PHP_VERSION}-phar \
-    php${PHP_VERSION}-posix \
-    #php${PHP_VERSION}-readline \
-    php${PHP_VERSION}-shmop \
-    php${PHP_VERSION}-sockets \
-    php${PHP_VERSION}-sysvmsg \
-    php${PHP_VERSION}-tokenizer \
-    php${PHP_VERSION}-session \
-    php${PHP_VERSION}-openssl \
-    php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-zip \
-    php${PHP_VERSION}-xsl \
-    php${PHP_VERSION}-bcmath \
-    php${PHP_VERSION}-imap \
-    php${PHP_VERSION}-pgsql \
-    php${PHP_VERSION}-pdo_pgsql \
-    php${PHP_VERSION}-pdo_mysql \
-    php${PHP_VERSION}-pdo_dblib \
-    php${PHP_VERSION}-pcntl \
-    php${PHP_VERSION}-tidy && \
+    php7-calendar \
+    php7-ctype \
+    php7-curl \
+    php7-exif \
+    php7-fileinfo \
+    php7-ftp \
+    php7-gd \
+    php7-gettext \
+    php7-iconv \
+    php7-intl \
+    php7-json \
+    php7-mbstring \
+    php7-mysqli \
+    php7-pdo \
+    php7-phar \
+    php7-posix \
+    #php7-readline \
+    php7-shmop \
+    php7-sockets \
+    php7-sysvmsg \
+    php7-tokenizer \
+    php7-session \
+    php7-openssl \
+    php7-xml \
+    php7-zip \
+    php7-xsl \
+    php7-bcmath \
+    php7-imap \
+    php7-pgsql \
+    php7-pdo_pgsql \
+    php7-pdo_mysql \
+    php7-pdo_dblib \
+    php7-pcntl \
+    php7-tidy && \
     #pecl install pdo_dblib && \
     pecl install imagick redis && \
     pecl install swoole && \
