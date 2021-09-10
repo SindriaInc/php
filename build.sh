@@ -23,11 +23,10 @@ TAG_SUFFIX=$3
 HOST_USER_UID=1000
 TIMEZONE=Europe/Rome
 
-docker build ./src \
+docker build ./src/php${TAG_SUFFIX} \
     --tag ${IMAGE_NAME}:${TAG_VERSION}-${TAG_SUFFIX} \
     --tag ${IMAGE_NAME}:latest \
     --build-arg TAG_VERSION=${TAG_VERSION} \
     --build-arg TAG_SUFFIX=${TAG_SUFFIX} \
     --build-arg HOST_USER_UID=${HOST_USER_UID} \
     --build-arg TIMEZONE=${TIMEZONE}
-
