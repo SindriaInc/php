@@ -17,6 +17,21 @@ ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
 
+# dependencies required for running "phpize"
+# these get automatically installed and removed by "docker-php-ext-*" (unless they're already installed)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev dpkg \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkgconf \
+		re2c
+
+COPY resources/bin/ /usr/local/bin/
+
 # Update and install packages
 RUN apk update && \
     apk add \
@@ -85,6 +100,7 @@ RUN apk add --no-cache php7 \
     php7-pdo_dblib \
     php7-pecl-redis \
     php7-pecl-imagick \
+    php7-sodium \
     #php7-pecl-swoole \
     php7-pcntl \
     php7-tidy && \

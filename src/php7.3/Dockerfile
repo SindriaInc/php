@@ -17,6 +17,29 @@ ENV SINDRIA_USER="sindria"
 ENV SINDRIA_USER_HOME="/home/sindria"
 ENV PHP_VERSION=${TAG_SUFFIX}
 
+# dependencies required for running "phpize"
+# these get automatically installed and removed by "docker-php-ext-*" (unless they're already installed)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev dpkg \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkgconf \
+		re2c
+
+# dependencies required for running "pecl"
+ENV PECL_DEPS \
+		php7-pear \
+		php7-dev \
+		gcc \
+		musl-dev \
+		make
+
+COPY resources/bin/ /usr/local/bin/
+
 # Update and install packages
 RUN apk update && \
     apk add \
@@ -30,6 +53,8 @@ RUN apk update && \
     ca-certificates \
     tzdata && \
     rm -rf /var/cache/apk/*
+
+RUN apk --no-cache add
 
 # Setting app user, timezone and permissions
 RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
@@ -85,16 +110,12 @@ RUN apk add --no-cache php7 \
     php7-pdo_dblib \
     php7-pecl-redis \
     php7-pecl-imagick \
-    #php7-pecl-swoole \
+    php7-sodium \
     php7-pcntl \
     php7-tidy && \
     #pecl install pdo_dblib && \
     #pecl install imagick redis && \
-    #pecl install swoole && \
-    #docker-php-ext-enable swoole && \
-    #docker-php-ext-enable \
-    #imagick \
-    #redis && \
+    #docker-php-ext-enable imagick redis && \
     rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
