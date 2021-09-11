@@ -30,7 +30,15 @@ ENV PHPIZE_DEPS \
 		pkgconf \
 		re2c
 
-COPY resources/bin/ /usr/local/bin/
+# dependencies required for running "pecl"
+ENV PECL_DEPS \
+		php8-pear \
+		php8-dev \
+		gcc \
+		musl-dev \
+		make
+
+#COPY resources/bin/ /usr/local/bin/
 
 # Update and install packages
 RUN apk update && \
@@ -93,6 +101,7 @@ RUN apk add --no-cache php8 \
     php8-xsl \
     php8-bcmath \
     php8-imap \
+    php8-soap \
     php8-pgsql \
     php8-pdo_pgsql \
     php8-pdo_mysql \
@@ -101,16 +110,9 @@ RUN apk add --no-cache php8 \
     php8-pecl-redis \
     php8-pecl-imagick \
     php8-sodium \
-    #php8-pecl-swoole \
     php8-pcntl \
     php8-tidy && \
-    #pecl install pdo_dblib && \
-    #pecl install imagick redis && \
-    #pecl install swoole && \
-    #docker-php-ext-enable swoole && \
-    #docker-php-ext-enable \
-    #imagick \
-    #redis && \
+    ln -s /etc/php8 /etc/php && \
     rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]

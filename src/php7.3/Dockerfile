@@ -38,7 +38,7 @@ ENV PECL_DEPS \
 		musl-dev \
 		make
 
-COPY resources/bin/ /usr/local/bin/
+#COPY resources/bin/ /usr/local/bin/
 
 # Update and install packages
 RUN apk update && \
@@ -53,8 +53,6 @@ RUN apk update && \
     ca-certificates \
     tzdata && \
     rm -rf /var/cache/apk/*
-
-RUN apk --no-cache add
 
 # Setting app user, timezone and permissions
 RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
@@ -103,6 +101,7 @@ RUN apk add --no-cache php7 \
     php7-xsl \
     php7-bcmath \
     php7-imap \
+    php7-soap \
     php7-pgsql \
     php7-pdo_pgsql \
     php7-pdo_mysql \
@@ -113,9 +112,6 @@ RUN apk add --no-cache php7 \
     php7-sodium \
     php7-pcntl \
     php7-tidy && \
-    #pecl install pdo_dblib && \
-    #pecl install imagick redis && \
-    #docker-php-ext-enable imagick redis && \
     ln -s /etc/php7 /etc/php && \
     rm -rf /var/cache/apk/*
 
