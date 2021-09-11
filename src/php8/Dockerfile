@@ -47,11 +47,7 @@ COPY resources/.bashrc ${SINDRIA_USER_HOME}
 WORKDIR /var/www/app
 
 # Install php extensions
-RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-install calendar ctype curl exif fileinfo ftp gd gettext iconv intl json mbstring mysqli pdo phar posix readline shmop sockets sysvmsg sysvshm xml zip xsl bcmath imap soap pgsql pdo_pgsql pdo_mysql pcntl tidy sodium && \
-    docker-php-ext-enable imagick redis opcache imap zip && \
-    apk add \
+RUN apk add \
     php${PHP_VERSION}-calendar \
     php${PHP_VERSION}-ctype \
     php${PHP_VERSION}-curl \
@@ -93,6 +89,10 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
     docker-php-ext-enable \
     imagick \
     redis && \
+    docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install calendar ctype curl exif fileinfo ftp gd gettext iconv intl json mbstring mysqli pdo phar posix readline shmop sockets sysvmsg sysvshm xml zip xsl bcmath imap soap pgsql pdo_pgsql pdo_mysql pcntl tidy sodium && \
+    docker-php-ext-enable imagick redis opcache imap zip && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
 
