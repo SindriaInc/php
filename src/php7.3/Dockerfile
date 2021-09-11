@@ -137,7 +137,6 @@ COPY --from=builder /usr/local/lib/php/extensions/no-debug-non-zts-20180731/ /us
 # Setting php.ini
 COPY resources/php/php.ini /usr/local/etc/php/
 
-
 SHELL ["/bin/bash", "-c"]
 
 # Add and setup entrypoint
