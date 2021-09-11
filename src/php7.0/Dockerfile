@@ -1,4 +1,4 @@
-FROM php:7.0-alpine
+FROM alpine:3.6
 
 ARG TAG_SUFFIX
 ARG TAG_VERSION
@@ -31,10 +31,6 @@ RUN apk update && \
     tzdata && \
     rm -rf /var/cache/apk/*
 
-## Install dependencies
-RUN apk add --no-cache --virtual build-dependencies gcc g++ make autoconf libffi-dev libc-dev libressl-dev curl-dev bzip2-dev libzip-dev libsodium libsodium-dev postgresql-dev libjpeg-turbo freetype freetype-dev libpng libpng-dev icu icu-dev oniguruma-dev gettext-dev libxml2-dev libedit-dev libxslt-dev imap-dev krb5-dev tidyhtml-dev libmemcached-libs imagemagick imagemagick-libs imagemagick-dev libjpeg-turbo-dev && \
-    rm -rf /var/cache/apk/*
-
 # Setting app user, timezone and permissions
 RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
     mkdir -p /var/www && \
@@ -46,12 +42,11 @@ COPY resources/.bashrc ${SINDRIA_USER_HOME}
 
 WORKDIR /var/www/app
 
-# Install php extensions
-RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-install calendar ctype curl exif fileinfo ftp gd gettext iconv intl json mbstring mysqli pdo phar posix readline shmop sockets sysvmsg sysvshm xml zip xsl bcmath imap soap pgsql pdo_pgsql pdo_mysql pcntl tidy sodium && \
-    docker-php-ext-enable imagick redis opcache imap zip && \
-    apk add \
+# Installing PHP with extensions
+RUN apk add --no-cache php7 \
+    php7-common \
+    php7-cli \
+    php7-opcache \
     php7-calendar \
     php7-ctype \
     php7-curl \
@@ -68,6 +63,7 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
     php7-pdo \
     php7-phar \
     php7-posix \
+    php7-dom \
     #php7-readline \
     php7-shmop \
     php7-sockets \
@@ -76,6 +72,8 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
     php7-session \
     php7-openssl \
     php7-xml \
+    php7-xmlwriter \
+    php7-simplexml \
     php7-zip \
     php7-xsl \
     php7-bcmath \
@@ -83,15 +81,17 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
     php7-pgsql \
     php7-pdo_pgsql \
     php7-pdo_mysql \
+    php7-pdo_sqlite \
     php7-pdo_dblib \
+    #php7-pecl-redis \
+    #php7-pecl-imagick \
     php7-pcntl \
     php7-tidy && \
     #pecl install pdo_dblib && \
-    pecl install imagick redis && \
-    docker-php-ext-enable \
-    imagick \
-    redis && \
-    apk del build-dependencies && \
+    #pecl install imagick redis && \
+    #docker-php-ext-enable \
+    #imagick \
+    #redis && \
     rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
