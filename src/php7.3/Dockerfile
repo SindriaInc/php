@@ -116,6 +116,7 @@ RUN apk add --no-cache php7 \
     #pecl install pdo_dblib && \
     #pecl install imagick redis && \
     #docker-php-ext-enable imagick redis && \
+    ln -s /etc/php7 /etc/php && \
     rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
