@@ -1,15 +1,9 @@
-FROM php:7.3-alpine3.12
+FROM php:7.3-alpine3.12 as builder
 
 ARG TAG_SUFFIX
 ARG TAG_VERSION
 ARG HOST_USER_UID
 ARG TIMEZONE
-
-LABEL \
-	name="php" \
-	image="sindriainc/php" \
-	tag="${TAG_VERSION}-${TAG_SUFFIX}" \
-	vendor="sindria"
 
 ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/sindria/.local/bin"
 ENV TZ=${TIMEZONE}
@@ -34,17 +28,6 @@ RUN apk update && \
 ## Install dependencies
 RUN apk add --no-cache --virtual build-dependencies gcc g++ make autoconf libffi-dev libc-dev libressl-dev curl-dev bzip2-dev libzip-dev libsodium libsodium-dev postgresql-dev libjpeg-turbo freetype freetype-dev libpng libpng-dev icu icu-dev oniguruma-dev gettext-dev libxml2-dev libedit-dev libxslt-dev imap-dev krb5-dev tidyhtml-dev libmemcached-libs imagemagick imagemagick-libs imagemagick-dev libjpeg-turbo-dev && \
     rm -rf /var/cache/apk/*
-
-# Setting app user, timezone and permissions
-RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
-    mkdir -p /var/www && \
-    mkdir -p /var/www/app && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    chmod -R 770 /var/www/app && \
-    chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
-COPY resources/.bashrc ${SINDRIA_USER_HOME}
-
-WORKDIR /var/www/app
 
 # Install php extensions
 RUN apk add \
@@ -93,8 +76,67 @@ RUN apk add \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
     docker-php-ext-install calendar ctype curl exif fileinfo ftp gd gettext iconv intl json mbstring mysqli pdo phar posix readline shmop sockets sysvmsg sysvshm xml zip xsl bcmath imap soap pgsql pdo_pgsql pdo_mysql pcntl tidy sodium && \
     docker-php-ext-enable imagick redis opcache imap zip && \
-    apk del build-dependencies && \
+    #apk del build-dependencies && \
     rm -rf /var/cache/apk/*
+
+RUN ls -la /usr/lib
+
+
+FROM php:7.3-alpine3.12
+
+ARG TAG_SUFFIX
+ARG TAG_VERSION
+ARG HOST_USER_UID
+ARG TIMEZONE
+
+LABEL \
+	name="php" \
+	image="sindriainc/php" \
+	tag="${TAG_VERSION}-${TAG_SUFFIX}" \
+	vendor="sindria"
+
+ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/sindria/.local/bin"
+ENV TZ=${TIMEZONE}
+ENV SINDRIA_USER="sindria"
+ENV SINDRIA_USER_HOME="/home/sindria"
+ENV PHP_VERSION=${TAG_SUFFIX}
+
+# Update and install packages
+RUN apk update && \
+    apk add \
+    shadow \
+    bash \
+    curl \
+    wget \
+    git \
+    rsync \
+    openssl \
+    ca-certificates \
+    tzdata && \
+    rm -rf /var/cache/apk/*
+
+# Setting app user, timezone and permissions
+RUN addgroup -S ${SINDRIA_USER} -g ${HOST_USER_UID} && adduser -s /bin/bash -S ${SINDRIA_USER} -u ${HOST_USER_UID} -G ${SINDRIA_USER} -h ${SINDRIA_USER_HOME} && \
+    mkdir -p /var/www && \
+    mkdir -p /var/www/app && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    chmod -R 770 /var/www/app && \
+    chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
+COPY resources/.bashrc ${SINDRIA_USER_HOME}
+
+WORKDIR /var/www/app
+
+# Add only required shared libraries
+COPY --from=builder /usr/lib/ /usr/lib/
+
+# Add php modules and configuration
+COPY --from=builder /usr/lib/php7/modules/ /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
+COPY --from=builder /usr/local/lib/php/extensions/no-debug-non-zts-20180731/ /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
+#COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+
+# Setting php.ini
+COPY resources/php/php.ini /usr/local/etc/php/
+
 
 SHELL ["/bin/bash", "-c"]
 
