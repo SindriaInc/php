@@ -109,7 +109,7 @@ RUN apk add --no-cache php7 \
     php7-pdo_dblib \
     #php7-pecl-redis \
     #php7-pecl-imagick \
-    php7-sodium \
+    #php7-sodium \
     php7-pcntl \
     php7-tidy && \
     ln -s /etc/php7 /etc/php && \
