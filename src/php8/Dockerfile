@@ -113,7 +113,6 @@ RUN apk add --no-cache php8 \
     php8-pcntl \
     php8-tidy && \
     ln -s /etc/php8 /etc/php && \
-    rm /usr/local/bin/php && \
     ln -s /usr/bin/php8 /usr/local/bin/php && \
     rm -rf /var/cache/apk/*
 
