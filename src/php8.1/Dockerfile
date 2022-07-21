@@ -1,4 +1,5 @@
-FROM alpine:3.13
+ARG ARCH
+FROM ${ARCH}/alpine:3.13
 
 ARG TAG_SUFFIX
 ARG TAG_VERSION
@@ -113,7 +114,7 @@ RUN apk add --no-cache php8 \
     php8-pcntl \
     php8-tidy && \
     ln -s /etc/php8 /etc/php && \
-    ln -s /usr/bin/php8 /usr/local/bin/php && \
+    ln -s /usr/bin/php8 /usr/bin/php && \
     rm -rf /var/cache/apk/*
 
 SHELL ["/bin/bash", "-c"]
